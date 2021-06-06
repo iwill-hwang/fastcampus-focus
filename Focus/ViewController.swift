@@ -11,6 +11,16 @@ enum Medal {
     case gold
     case silver
     case bronze
+    
+    init(by duration: TimeInterval) {
+        if duration <= 5 {
+            self = .bronze
+        } else if 5 < duration && duration <= 7 {
+            self = .silver
+        } else {
+            self = .gold
+        }
+    }
 }
 
 extension Medal {
@@ -49,8 +59,19 @@ extension UIView {
     }
 }
 
+extension UIView {
+    func makeRound()  {
+        self.layer.cornerRadius = self.frame.height / 2
+        self.layer.cornerCurve = .continuous
+        self.layer.masksToBounds = true
+    }
+}
+
 class ViewController: UIViewController {
     var currentMedal = Medal.bronze
+    
+    private let from: Float = 3
+    private let to: Float = 10
     
     @IBOutlet weak private var iconView: UIImageView!
     @IBOutlet weak private var timeLabel: UILabel!
@@ -64,21 +85,23 @@ class ViewController: UIViewController {
         
         self.slider.value = 0
         
-        self.startButton.layer.cornerRadius = 10
-        self.startButton.layer.cornerCurve = .circular
+        self.startButton.makeRound()
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let identifier = segue.identifier
+        
+        if identifier == "Timer" {
+            let timerViewController = segue.destination as? TimerViewController
+            timerViewController?.duration = Int(from + ((to - from) * slider.value))
+        }
     }
     
     @IBAction func sliderValueDidChange() {
         let value = slider.value
-        let time = Int(10 + (50 * value))
+        let time = Int(from + ((to - from) * value))
         
-        var medal = Medal.bronze
-        
-        if 20 < time && time < 40 {
-            medal = .silver
-        } else if 40 <= time {
-            medal = .gold
-        }
+        let medal = Medal.init(by: TimeInterval(time))
         
         if currentMedal != medal {
             iconView.animateHighlight()
@@ -90,6 +113,10 @@ class ViewController: UIViewController {
         startButton.backgroundColor = medal.color
         
         currentMedal = medal
+    }
+    
+    @IBAction func presentHistory() {
+        performSegue(withIdentifier: "History", sender: nil)
     }
     
     @IBAction func start() {
@@ -119,9 +146,16 @@ class TimerViewController: UIViewController {
     
     @IBOutlet weak private var cheerUpLabel: UILabel!
     @IBOutlet weak private var durationLabel: UILabel!
+    @IBOutlet weak private var progressContainer: UIView!
+    @IBOutlet weak private var progressWidth: NSLayoutConstraint!
+    @IBOutlet weak private var cancelButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.layoutIfNeeded()
+        self.cheerUpLabel.text = cheerUpMessages.randomElement()
+        self.progressContainer.makeRound()
+        self.cancelButton.makeRound()
         self.updateDuration(seconds: duration)
         self.addObservers()
     }
@@ -147,6 +181,7 @@ class TimerViewController: UIViewController {
         let minutes = seconds % 60
         
         durationLabel.text = String(format: "%02d:%02d", hours, minutes)
+        progressWidth.constant = CGFloat(remaining) / CGFloat(duration) * progressContainer.frame.width
     }
     
     @objc private func didEnterBackground(){
