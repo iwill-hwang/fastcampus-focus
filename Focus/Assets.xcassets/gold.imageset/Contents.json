@@ -1,15 +1,17 @@
 {
   "images" : [
     {
+      "filename" : "gold.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "gold.png",
+      "filename" : "gold@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "gold@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

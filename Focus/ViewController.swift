@@ -38,11 +38,11 @@ extension Medal {
     var color: UIColor {
         switch self {
         case .gold:
-            return UIColor(red: 251 / 255, green: 203 / 255, blue: 81 / 255, alpha: 1)
+            return UIColor(red: 255 / 255, green: 208 / 255, blue: 81 / 255, alpha: 1)
         case .silver:
-            return UIColor(red: 174 / 255, green: 174 / 255, blue: 174 / 255, alpha: 1)
+            return UIColor(red: 177 / 255, green: 161 / 255, blue: 182 / 255, alpha: 1)
         case .bronze:
-            return UIColor(red: 248 / 255, green: 164 / 255, blue: 125 / 255, alpha: 1)
+            return UIColor(red: 225 / 255, green: 179 / 255, blue: 170 / 255, alpha: 1)
         }
     }
 }
@@ -81,10 +81,10 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.iconView.image = Medal.bronze.icon
-        
+        self.iconView.image = currentMedal.icon
+        self.slider.thumbTintColor = currentMedal.color
         self.slider.value = 0
-        
+        self.startButton.backgroundColor = currentMedal.color
         self.startButton.makeRound()
     }
     
@@ -107,10 +107,11 @@ class ViewController: UIViewController {
             iconView.animateHighlight()
         }
         
-        slider.tintColor = medal.color
+        slider.thumbTintColor = currentMedal.color
         timeLabel.text = "\(time) minutes"
         iconView.image = medal.icon
         startButton.backgroundColor = medal.color
+        
         
         currentMedal = medal
     }
