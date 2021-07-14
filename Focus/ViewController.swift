@@ -67,6 +67,12 @@ extension UIView {
     }
 }
 
+enum TimerStatus {
+    case active
+    case background
+    case lockscreen
+}
+
 class ViewController: UIViewController {
     var currentMedal = Medal.bronze
     
@@ -93,7 +99,9 @@ class ViewController: UIViewController {
         
         if identifier == "Timer" {
             let timerViewController = segue.destination as? TimerViewController
-            timerViewController?.duration = Int(from + ((to - from) * slider.value))
+            let minutes = Int(from + ((to - from) * slider.value)) * 60
+            
+            timerViewController?.duration = minutes
         }
     }
     
@@ -122,123 +130,5 @@ class ViewController: UIViewController {
     
     @IBAction func start() {
         performSegue(withIdentifier: "Timer", sender: nil)
-    }
-}
-
-class TimerViewController: UIViewController {
-    typealias Second = Int
-    
-    let cheerUpMessages = [
-        "화이팅해요!",
-        "조금 더 집중 해볼까요?"
-    ]
-    
-    var duration: Second =  10
-    
-    var remaining: Second {
-        duration - Int(Date().timeIntervalSince1970 - start.timeIntervalSince1970)
-    }
-    
-    var timer: Timer!
-    var start = Date()
-    var deactiveTime: Date?
-    
-    var isActive = true
-    
-    @IBOutlet weak private var cheerUpLabel: UILabel!
-    @IBOutlet weak private var durationLabel: UILabel!
-    @IBOutlet weak private var progressContainer: UIView!
-    @IBOutlet weak private var progressWidth: NSLayoutConstraint!
-    @IBOutlet weak private var cancelButton: UIButton!
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        self.view.layoutIfNeeded()
-        self.cheerUpLabel.text = cheerUpMessages.randomElement()
-        self.progressContainer.makeRound()
-        self.cancelButton.makeRound()
-        self.updateDuration(seconds: duration)
-        self.addObservers()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        if timer == nil {
-            self.updateDuration(seconds: duration)
-            self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
-        }
-    }
-
-    private func addObservers() {
-        let center = NotificationCenter.default
-        
-        center.addObserver(self, selector: #selector(didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
-        center.addObserver(self, selector: #selector(didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
-    }
-    
-    private func updateDuration(seconds: Second) {
-        let hours = seconds / 60
-        let minutes = seconds % 60
-        
-        durationLabel.text = String(format: "%02d:%02d", hours, minutes)
-        progressWidth.constant = CGFloat(remaining) / CGFloat(duration) * progressContainer.frame.width
-    }
-    
-    @objc private func didEnterBackground(){
-        self.isActive = false
-        self.deactiveTime = Date()
-        print(UIApplication.shared.isProtectedDataAvailable)
-    }
-    
-    @objc private func didBecomeActive(){
-        self.isActive = true
-        self.updateDuration(seconds: remaining)
-        
-        if let deactiveTime = deactiveTime, Date().timeIntervalSince1970 - deactiveTime.timeIntervalSince1970 > 10 {
-            
-        }
-    }
-    
-    @objc private func tick() {
-        guard isActive else {
-            return
-        }
-        
-        if remaining > 0 && remaining % 15 == 0 {
-            cheerUpLabel.text = cheerUpMessages.randomElement()
-        }
-        
-        if remaining == 0 {
-            self.timer.invalidate()
-            self.save()
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-                let controller = UIAlertController(title: "성공했어요!", message: nil, preferredStyle: .alert)
-                
-                controller.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-                    self?.dismiss(animated: true, completion: nil)
-                }))
-                    
-                self?.present(controller, animated: true, completion: nil)
-            }
-        }
-        
-        updateDuration(seconds: remaining)
-    }
-    
-    private func save() {
-        let defaults = UserDefaults.standard
-        
-        var list = defaults.object(forKey: "list") as? [[String: Any]] ?? []
-        
-        list.append(["duration": self.duration, "date": Date()])
-        
-        defaults.setValue(list, forKey: "list")
-        defaults.synchronize()
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
 }
