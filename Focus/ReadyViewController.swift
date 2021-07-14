@@ -7,15 +7,11 @@
 
 import UIKit
 
-enum Medal {
-    case gold
-    case silver
-    case bronze
-    
+extension Medal {
     init(by duration: TimeInterval) {
-        if duration <= 5 {
+        if duration < 30 {
             self = .bronze
-        } else if 5 < duration && duration <= 7 {
+        } else if 30 <= duration && duration < 50 {
             self = .silver
         } else {
             self = .gold
@@ -47,7 +43,7 @@ extension Medal {
     }
 }
 
-extension UIView {
+fileprivate extension UIView {
     func animateHighlight() {
         UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseIn, animations: {
             self.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
@@ -60,24 +56,24 @@ extension UIView {
 }
 
 extension UIView {
-    func makeRound()  {
+    func makeRound(masksToBounds: Bool = false)  {
         self.layer.cornerRadius = self.frame.height / 2
         self.layer.cornerCurve = .continuous
-        self.layer.masksToBounds = true
+        self.layer.masksToBounds = masksToBounds
     }
 }
 
-enum TimerStatus {
-    case active
-    case background
-    case lockscreen
+extension UIView {
+    func addShadow(with color: UIColor) {
+        self.layer.shadowOpacity = 0.5
+        self.layer.shadowColor = color.cgColor
+        self.layer.shadowRadius = 5
+    }
 }
 
-class ViewController: UIViewController {
-    var currentMedal = Medal.bronze
-    
-    private let from: Float = 3
-    private let to: Float = 10
+class ReadyViewController: UIViewController {
+    private var currentMedal = Medal.bronze
+    private let range: (from: Float, to: Float) = (from: 20, to: 60)
     
     @IBOutlet weak private var iconView: UIImageView!
     @IBOutlet weak private var timeLabel: UILabel!
@@ -87,11 +83,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.iconView.image = currentMedal.icon
-        self.slider.thumbTintColor = currentMedal.color
         self.slider.value = 0
-        self.startButton.backgroundColor = currentMedal.color
         self.startButton.makeRound()
+        self.sliderValueDidChange()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -99,29 +93,36 @@ class ViewController: UIViewController {
         
         if identifier == "Timer" {
             let timerViewController = segue.destination as? TimerViewController
-            let minutes = Int(from + ((to - from) * slider.value)) * 60
+            let duration = minutes(by: range, value: slider.value)
             
-            timerViewController?.duration = minutes
+//            timerViewController?.duration = duration * 60
+            timerViewController?.duration = 20
         }
     }
     
     @IBAction func sliderValueDidChange() {
-        let value = slider.value
-        let time = Int(from + ((to - from) * value))
-        
-        let medal = Medal.init(by: TimeInterval(time))
+        let duration = minutes(by: range, value: slider.value)
+        let medal = Medal.init(by: TimeInterval(duration))
         
         if currentMedal != medal {
             iconView.animateHighlight()
         }
         
         slider.thumbTintColor = currentMedal.color
-        timeLabel.text = "\(time) minutes"
+        timeLabel.text = "\(duration) minutes"
         iconView.image = medal.icon
-        startButton.backgroundColor = medal.color
         
+        startButton.backgroundColor = medal.color
+        startButton.addShadow(with: medal.color)
         
         currentMedal = medal
+    }
+    
+    
+    private func minutes(by range: (from: Float, to: Float), value: Float) -> Int {
+        let from = range.from
+        let to = range.to
+        return Int(from + ((to - from) * value))
     }
     
     @IBAction func presentHistory() {

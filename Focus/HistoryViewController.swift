@@ -8,6 +8,14 @@
 import Foundation
 import UIKit
 
+extension Date {
+    func formatted() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy. MM. dd. HH:mm"
+        return formatter.string(from: self)
+    }
+}
+
 class HistoryCell: UITableViewCell {
     @IBOutlet weak private var iconView: UIImageView!
     @IBOutlet weak private var dateLabel: UILabel!
@@ -15,19 +23,15 @@ class HistoryCell: UITableViewCell {
     
     func update(duration: TimeInterval, date: Date) {
         let medal = Medal.init(by: duration)
-        let dateformatter = DateFormatter()
-        
-        dateformatter.dateFormat = "yyyy. MM. dd. HH:mm"
         
         iconView.image = medal.icon
-        dateLabel.text = dateformatter.string(from: date)
+        dateLabel.text = date.formatted()
         timeLabel.text = "\(duration) minutes"
     }
 }
 
-
 class HistoryViewController: UIViewController {
-    private var list: [[String: Any]] {
+    lazy private var list: [[String: Any]] = {
         let defaults = UserDefaults.standard
         let list = defaults.object(forKey: "list") as? [[String: Any]] ?? []
         
@@ -37,7 +41,7 @@ class HistoryViewController: UIViewController {
             
             return lhs > rhs
         })
-    }
+    }()
     
     @IBOutlet weak private var tableView: UITableView!
     

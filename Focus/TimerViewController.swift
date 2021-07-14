@@ -8,28 +8,34 @@
 import Foundation
 import UIKit
 
+enum TimerStatus {
+    case active
+    case background
+    case lockscreen
+}
+
 class TimerViewController: UIViewController {
     typealias Second = Int
     
-    private var lastStatus: TimerStatus = .active
+    var duration: Second =  0
     
-    let cheerUpMessages = [
+    private let cheerUpMessages = [
         "화이팅해요!",
         "조금 더 집중 해볼까요?"
     ]
     
-    var duration: Second =  10
+    private var lastStatus: TimerStatus = .active
     
-    var remaining: Second {
+    private var remaining: Second {
         duration - Int(Date().timeIntervalSince1970 - start.timeIntervalSince1970)
     }
     
-    var timer: Timer!
-    var start = Date()
+    private var timer: Timer!
+    private var start = Date()
     
-    var deactiveTime: Date?
+    private var deactiveTime: Date?
     
-    var isActive = true
+    private var finished = false
     
     @IBOutlet weak private var cheerUpLabel: UILabel!
     @IBOutlet weak private var durationLabel: UILabel!
@@ -40,8 +46,10 @@ class TimerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.layoutIfNeeded()
+        
         self.cheerUpLabel.text = cheerUpMessages.randomElement()
-        self.progressContainer.makeRound()
+        self.progressWidth.constant = progressContainer.frame.width
+        self.progressContainer.makeRound(masksToBounds: true)
         self.cancelButton.makeRound()
         self.updateDuration(seconds: duration)
         self.addObservers()
@@ -62,11 +70,12 @@ class TimerViewController: UIViewController {
         center.addObserver(self, selector: #selector(locked), name: UIApplication.protectedDataWillBecomeUnavailableNotification, object: nil)
         center.addObserver(self, selector: #selector(enteredBackground), name:  UIApplication.didEnterBackgroundNotification, object: nil)
         center.addObserver(self, selector: #selector(becomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
+        center.addObserver(self, selector: #selector(enterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     
     private func updateDuration(seconds: Second) {
-        let hours = seconds / 60
-        let minutes = seconds % 60
+        let hours = max(seconds / 60, 0)
+        let minutes = max(seconds % 60, 0)
         
         durationLabel.text = String(format: "%02d:%02d", hours, minutes)
         progressWidth.constant = CGFloat(remaining) / CGFloat(duration) * progressContainer.frame.width
@@ -80,6 +89,10 @@ class TimerViewController: UIViewController {
         
         controller.addAction(action)
             
+        if self.presentedViewController != nil {
+            self.dismiss(animated: false, completion: nil)
+        }
+        
         self.present(controller, animated: true, completion: nil)
     }
     
@@ -100,17 +113,35 @@ class TimerViewController: UIViewController {
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
         let content = UNMutableNotificationContent()
         
-        content.title = title
-        content.body = message
-        
         let request = UNNotificationRequest(identifier: "\(Date().timeIntervalSince1970)", content: content, trigger: trigger)
         let center = UNUserNotificationCenter.current()
+        
+        content.title = title
+        content.body = message
         
         center.add(request, withCompletionHandler: { error in
             if let error = error {
                 print(error)
             }
         })
+    }
+    
+    @IBAction private func cancel() {
+        let controller = UIAlertController(title: "취소하시겠습니까?", message: "취소하면 메달을 얻을 수 없어요!", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "계속하기", style: .cancel, handler: nil)
+        
+        let okAction = UIAlertAction(title: "그만하기", style: .destructive, handler: { _ in
+            self.dismiss(animated: true, completion: nil)
+        })
+        
+        controller.addAction(cancelAction)
+        controller.addAction(okAction)
+        
+        self.present(controller, animated: true, completion: nil)
+    }
+    
+    @objc private func enterForeground() {
+        updateDuration(seconds: remaining)
     }
     
     @objc private func becomeActive() {
@@ -126,17 +157,20 @@ class TimerViewController: UIViewController {
             } else {
                 didFail = false
             }
-        } else if lastStatus == .lockscreen && didExpired {
-            
         }
         
-        if didFail {
+        if lastStatus == .lockscreen && didExpired && finished == false {
+            success()
+            finished = true
+        }
+        
+        if didFail && finished == false {
             fail()
+            finished = true
         }
         
         lastStatus = .active
         deactiveTime = nil
-        
     }
     
     @objc private func enteredBackground() {
@@ -164,7 +198,7 @@ class TimerViewController: UIViewController {
             cheerUpLabel.text = cheerUpMessages.randomElement()
         }
         
-        if remaining == 0 {
+        if remaining <= 0 {
             self.timer.invalidate()
             self.save()
             
@@ -181,7 +215,7 @@ class TimerViewController: UIViewController {
         
         var list = defaults.object(forKey: "list") as? [[String: Any]] ?? []
         
-        list.append(["duration": self.duration, "date": Date()])
+        list.append(["duration": self.duration, "date": start])
         
         defaults.setValue(list, forKey: "list")
         defaults.synchronize()
