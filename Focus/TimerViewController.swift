@@ -97,7 +97,6 @@ class TimerViewController: UIViewController {
     }
     
     private func fail() {
-        self.timer?.invalidate()
         let controller = UIAlertController(title: "실패했습니다", message: "집중하기에 실패했어요! 다시 시도해주세요!", preferredStyle: .alert)
         let okAction = UIAlertAction(title: "확인", style: .default, handler: { _ in
             self.dismiss(animated: true, completion: nil)
@@ -164,10 +163,12 @@ class TimerViewController: UIViewController {
         if lastStatus == .lockscreen && didExpired && finished == false {
             success()
             finished = true
+            timer?.invalidate()
         }
         
         if didFail && finished == false {
             fail()
+            timer?.invalidate()
             finished = true
         }
         
@@ -176,7 +177,9 @@ class TimerViewController: UIViewController {
     }
     
     @objc private func enteredBackground() {
-        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        guard finished == false else {
+            return
+        }
         
         let now = Date()
         
@@ -186,6 +189,10 @@ class TimerViewController: UIViewController {
     }
     
     @objc private func locked(){
+        guard finished == false else {
+            return
+        }
+        
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         
         lastStatus = .lockscreen
@@ -203,10 +210,12 @@ class TimerViewController: UIViewController {
         }
         
         if remaining <= 0 {
-            self.timer?.invalidate()
-            self.save()
+            timer?.invalidate()
+            finished = true
+            save()
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                
                 self?.success()
             }
         }
