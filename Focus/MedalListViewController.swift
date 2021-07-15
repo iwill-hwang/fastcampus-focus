@@ -16,7 +16,7 @@ extension Date {
     }
 }
 
-class HistoryCell: UITableViewCell {
+class MedalCell: UITableViewCell {
     @IBOutlet weak private var iconView: UIImageView!
     @IBOutlet weak private var dateLabel: UILabel!
     @IBOutlet weak private var timeLabel: UILabel!
@@ -30,7 +30,7 @@ class HistoryCell: UITableViewCell {
     }
 }
 
-class HistoryViewController: UIViewController {
+class MedalListViewController: UIViewController {
     lazy private var list: [[String: Any]] = {
         let defaults = UserDefaults.standard
         let list = defaults.object(forKey: "list") as? [[String: Any]] ?? []
@@ -50,9 +50,9 @@ class HistoryViewController: UIViewController {
     }
 }
 
-extension HistoryViewController: UITableViewDataSource, UITableViewDelegate {
+extension MedalListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "HistoryCell", for: indexPath) as! HistoryCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MedalCell", for: indexPath) as! MedalCell
         
         let duration = list[indexPath.row]["duration"] as! TimeInterval
         let date = list[indexPath.row]["date"] as! Date

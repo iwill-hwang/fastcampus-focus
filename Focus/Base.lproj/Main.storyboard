@@ -211,7 +211,7 @@
         <!--History-->
         <scene sceneID="m9K-68-ORt">
             <objects>
-                <viewController id="kbi-Ze-HZq" customClass="HistoryViewController" customModule="Focus" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="kbi-Ze-HZq" customClass="MedalListViewController" customModule="Focus" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="bfR-vf-XVE">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="548"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -220,7 +220,7 @@
                                 <rect key="frame" x="0.0" y="56" width="320" height="492"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="HistoryCell" rowHeight="80" id="2ZR-yn-9oA" customClass="HistoryCell" customModule="Focus" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="HistoryCell" rowHeight="80" id="2ZR-yn-9oA" customClass="MedalCell" customModule="Focus" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="24.5" width="320" height="80"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="2ZR-yn-9oA" id="ZXk-nl-t35">

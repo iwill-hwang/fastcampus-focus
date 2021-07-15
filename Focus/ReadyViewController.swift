@@ -85,6 +85,8 @@ class ReadyViewController: UIViewController {
         
         self.slider.value = 0
         self.startButton.makeRound()
+        self.slider.minimumValue = range.from
+        self.slider.maximumValue = range.to
         self.sliderValueDidChange()
     }
     
@@ -93,7 +95,7 @@ class ReadyViewController: UIViewController {
         
         if identifier == "Timer" {
             let timerViewController = segue.destination as? TimerViewController
-            let duration = minutes(by: range, value: slider.value)
+            let duration = slider.value
             
 //            timerViewController?.duration = duration * 60
             timerViewController?.duration = 20
@@ -101,7 +103,7 @@ class ReadyViewController: UIViewController {
     }
     
     @IBAction func sliderValueDidChange() {
-        let duration = minutes(by: range, value: slider.value)
+        let duration = Int(slider.value)
         let medal = Medal.init(by: TimeInterval(duration))
         
         if currentMedal != medal {
@@ -116,13 +118,6 @@ class ReadyViewController: UIViewController {
         startButton.addShadow(with: medal.color)
         
         currentMedal = medal
-    }
-    
-    
-    private func minutes(by range: (from: Float, to: Float), value: Float) -> Int {
-        let from = range.from
-        let to = range.to
-        return Int(from + ((to - from) * value))
     }
     
     @IBAction func presentHistory() {

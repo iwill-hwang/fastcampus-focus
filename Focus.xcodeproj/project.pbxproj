@@ -13,7 +13,7 @@
 		D826F7952663886E000A3278 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D826F7932663886E000A3278 /* Main.storyboard */; };
 		D826F7972663886F000A3278 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D826F7962663886F000A3278 /* Assets.xcassets */; };
 		D826F79A2663886F000A3278 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D826F7982663886F000A3278 /* LaunchScreen.storyboard */; };
-		D8E1AFAD266C5C3400038620 /* HistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8E1AFAC266C5C3400038620 /* HistoryViewController.swift */; };
+		D8E1AFAD266C5C3400038620 /* MedalListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8E1AFAC266C5C3400038620 /* MedalListViewController.swift */; };
 		D8EE7771269ED4B30080D098 /* Medal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EE7770269ED4B30080D098 /* Medal.swift */; };
 		D8F0BD38269EA07C004E55AD /* TimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F0BD37269EA07C004E55AD /* TimerViewController.swift */; };
 /* End PBXBuildFile section */
@@ -27,7 +27,7 @@
 		D826F7962663886F000A3278 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D826F7992663886F000A3278 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D826F79B2663886F000A3278 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D8E1AFAC266C5C3400038620 /* HistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewController.swift; sourceTree = "<group>"; };
+		D8E1AFAC266C5C3400038620 /* MedalListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedalListViewController.swift; sourceTree = "<group>"; };
 		D8EE7770269ED4B30080D098 /* Medal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Medal.swift; sourceTree = "<group>"; };
 		D8F0BD37269EA07C004E55AD /* TimerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -64,8 +64,8 @@
 			children = (
 				D826F79B2663886F000A3278 /* Info.plist */,
 				D826F78D2663886E000A3278 /* AppDelegate.swift */,
-				D8E1AFAC266C5C3400038620 /* HistoryViewController.swift */,
 				D8EE7770269ED4B30080D098 /* Medal.swift */,
+				D8E1AFAC266C5C3400038620 /* MedalListViewController.swift */,
 				D826F7912663886E000A3278 /* ReadyViewController.swift */,
 				D826F78F2663886E000A3278 /* SceneDelegate.swift */,
 				D8F0BD37269EA07C004E55AD /* TimerViewController.swift */,
@@ -150,7 +150,7 @@
 				D826F7922663886E000A3278 /* ReadyViewController.swift in Sources */,
 				D826F78E2663886E000A3278 /* AppDelegate.swift in Sources */,
 				D826F7902663886E000A3278 /* SceneDelegate.swift in Sources */,
-				D8E1AFAD266C5C3400038620 /* HistoryViewController.swift in Sources */,
+				D8E1AFAD266C5C3400038620 /* MedalListViewController.swift in Sources */,
 				D8EE7771269ED4B30080D098 /* Medal.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

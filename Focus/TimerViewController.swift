@@ -30,7 +30,7 @@ class TimerViewController: UIViewController {
         duration - Int(Date().timeIntervalSince1970 - start.timeIntervalSince1970)
     }
     
-    private var timer: Timer!
+    private var timer: Timer?
     private var start = Date()
     
     private var deactiveTime: Date?
@@ -97,7 +97,7 @@ class TimerViewController: UIViewController {
     }
     
     private func fail() {
-        self.timer.invalidate()
+        self.timer?.invalidate()
         let controller = UIAlertController(title: "실패했습니다", message: "집중하기에 실패했어요! 다시 시도해주세요!", preferredStyle: .alert)
         let okAction = UIAlertAction(title: "확인", style: .default, handler: { _ in
             self.dismiss(animated: true, completion: nil)
@@ -203,7 +203,7 @@ class TimerViewController: UIViewController {
         }
         
         if remaining <= 0 {
-            self.timer.invalidate()
+            self.timer?.invalidate()
             self.save()
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
