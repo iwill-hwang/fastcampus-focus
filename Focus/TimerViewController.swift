@@ -68,9 +68,9 @@ class TimerViewController: UIViewController {
         let center = NotificationCenter.default
         
         center.addObserver(self, selector: #selector(locked), name: UIApplication.protectedDataWillBecomeUnavailableNotification, object: nil)
-        center.addObserver(self, selector: #selector(enteredBackground), name:  UIApplication.didEnterBackgroundNotification, object: nil)
-        center.addObserver(self, selector: #selector(becomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
-        center.addObserver(self, selector: #selector(enterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+        center.addObserver(self, selector: #selector(enteredBackground), name:  UIScene.didEnterBackgroundNotification, object: nil)
+        center.addObserver(self, selector: #selector(becomeActive), name: UIScene.didActivateNotification, object: nil)
+        center.addObserver(self, selector: #selector(enterForeground), name: UIScene.willEnterForegroundNotification, object: nil)
     }
     
     private func updateDuration(seconds: Second) {
@@ -112,12 +112,13 @@ class TimerViewController: UIViewController {
         
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
         let content = UNMutableNotificationContent()
-        
-        let request = UNNotificationRequest(identifier: "\(Date().timeIntervalSince1970)", content: content, trigger: trigger)
-        let center = UNUserNotificationCenter.current()
+        let identifier = "\(Date().timeIntervalSince1970)"
         
         content.title = title
         content.body = message
+        
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+        let center = UNUserNotificationCenter.current()
         
         center.add(request, withCompletionHandler: { error in
             if let error = error {
@@ -141,6 +142,7 @@ class TimerViewController: UIViewController {
     }
     
     @objc private func enterForeground() {
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         updateDuration(seconds: remaining)
     }
     
@@ -176,9 +178,11 @@ class TimerViewController: UIViewController {
     @objc private func enteredBackground() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         
+        let now = Date()
+        
         lastStatus = .background
-        deactiveTime = Date()
-        addNotification(at: Date().addingTimeInterval(5), title: "얼른 다시 딥중해주세요!", message: "얼른 복귀히자 않으면 메달을 얻을 수 없어요!")
+        deactiveTime = now
+        addNotification(at: now.addingTimeInterval(5), title: "얼른 다시 딥중해주세요!", message: "얼른 복귀히자 않으면 메달을 얻을 수 없어요!")
     }
     
     @objc private func locked(){

@@ -15,12 +15,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let center = UNUserNotificationCenter.current()
 
         center.requestAuthorization(options: [.alert, .badge, .sound]) { (granted, error) in
-            if granted {
-            } else {
-            }
         }
         
-        print("did finish launching")
         return true
     }
 
@@ -47,6 +43,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        print("will terminate")
     }
 }
