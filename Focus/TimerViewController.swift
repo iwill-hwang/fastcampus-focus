@@ -81,8 +81,11 @@ class TimerViewController: UIViewController {
         progressWidth.constant = CGFloat(remaining) / CGFloat(duration) * progressContainer.frame.width
     }
     
-    private func success() {
-        let controller = UIAlertController(title: "성공했어요!", message: nil, preferredStyle: .alert)
+    private func finish(success: Bool) {
+        let title = success ? "성공했어요!" : "실패했습니다 ㅠㅠ"
+        let message = success ? "메달을 획득했어요!" : "집중하기에 실패했어요! 다시 시도해주세요!"
+        
+        let controller = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let action = UIAlertAction(title: "확인", style: .default, handler: { _ in
             self.dismiss(animated: true, completion: nil)
         })
@@ -93,16 +96,6 @@ class TimerViewController: UIViewController {
             self.dismiss(animated: false, completion: nil)
         }
         
-        self.present(controller, animated: true, completion: nil)
-    }
-    
-    private func fail() {
-        let controller = UIAlertController(title: "실패했습니다", message: "집중하기에 실패했어요! 다시 시도해주세요!", preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.dismiss(animated: true, completion: nil)
-        })
-        
-        controller.addAction(okAction)
         self.present(controller, animated: true, completion: nil)
     }
     
@@ -161,13 +154,13 @@ class TimerViewController: UIViewController {
         }
         
         if lastStatus == .lockscreen && didExpired && finished == false {
-            success()
+            finish(success: true)
             finished = true
             timer?.invalidate()
         }
         
         if didFail && finished == false {
-            fail()
+            finish(success: false)
             timer?.invalidate()
             finished = true
         }
@@ -216,7 +209,7 @@ class TimerViewController: UIViewController {
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
                 
-                self?.success()
+                self?.finish(success: true)
             }
         }
         
